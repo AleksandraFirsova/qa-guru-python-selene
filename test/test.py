@@ -1,7 +1,8 @@
 from page.registration_page import RegistrationPage
+from utils.users import student
 
 
-def test_form(browser_settings):
+def test_form():
     registration_page = RegistrationPage()
 
     registration_page.open()
@@ -33,3 +34,9 @@ def test_form(browser_settings):
         "Current address",
         "NCR Delhi",
     ])
+
+
+def test_register_user():
+    reg_page = RegistrationPage()
+    reg_page.open().register(student)
+    reg_page.should_have_registered_user(student)
