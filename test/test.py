@@ -1,7 +1,14 @@
+import allure
+
 from page.registration_page import RegistrationPage
 from utils.users import student
 
 
+@allure.feature("Registration form")
+@allure.story("Manual user data")
+@allure.severity(allure.severity_level.CRITICAL)
+@allure.title("Successful registration with manual data")
+@allure.description("User fills registration form with hardcoded data")
 def test_form():
     registration_page = RegistrationPage()
 
@@ -36,6 +43,11 @@ def test_form():
     ])
 
 
+@allure.feature("Registration form")
+@allure.story("User model")
+@allure.severity(allure.severity_level.CRITICAL)
+@allure.title("Successful registration with generated user")
+@allure.description("User registers using User dataclass and Faker data")
 def test_register_user():
     reg_page = RegistrationPage()
     reg_page.open().register(student)
