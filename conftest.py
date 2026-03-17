@@ -23,6 +23,10 @@ def setup_browser():
     browser.config.base_url = "https://demoqa.com"
     browser.config.driver = driver
     browser.config.timeout = 10
+    attach.add_screenshot(driver)
+    attach.add_page_source(driver)
+    attach.add_console_logs(driver)
+    attach.add_video(driver)
 
     yield
     driver.quit()
