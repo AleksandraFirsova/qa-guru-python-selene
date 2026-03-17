@@ -10,13 +10,36 @@ from utils.users import Gender, Hobby
 
 
 class RegistrationPage:
+    def _remove_fixed_banners(self):
+        browser.driver.execute_script("""
+            document.querySelector('footer')?.remove();
+            document.querySelector('#fixedban')?.remove();
+        """)
+
+    def _scroll_to(self, element, offset=250):
+        browser.driver.execute_script("""
+            const el = arguments[0];
+            const offset = arguments[1];
+            const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo(0, y);
+        """, element.locate(), offset)
+
+    def _select_from_react_dropdown(self, input_id: str, value: str):
+        input_field = browser.element(input_id)
+
+        self._scroll_to(input_field, 300)
+
+        browser.driver.execute_script("""
+            arguments[0].click();
+        """, input_field.locate())
+
+        input_field.should(be.visible).type(value).press_enter()
 
     @allure.step("Open registration form page")
     def open(self):
         browser.open("/automation-practice-form")
-        browser.element(".practice-form-wrapper").should(
-            have.text("Practice Form")
-        )
+        browser.element(".practice-form-wrapper").should(have.text("Practice Form"))
+        self._remove_fixed_banners()
         return self
 
     @allure.step("Fill first name: {value}")
@@ -63,9 +86,7 @@ class RegistrationPage:
         browser.element('.react-datepicker__month-select option[value="1"]').click()
         browser.element(".react-datepicker__year-select").click()
         browser.element('.react-datepicker__year-select option[value="2002"]').click()
-        browser.element(
-            '[aria-label="Choose Wednesday, February 20th, 2002"]'
-        ).click()
+        browser.element('[aria-label="Choose Wednesday, February 20th, 2002"]').click()
         return self
 
     @allure.step("Fill birth date: {birth_date}")
@@ -77,13 +98,9 @@ class RegistrationPage:
 
         browser.element("#dateOfBirthInput").click()
         browser.element(".react-datepicker__month-select").click()
-        browser.element(
-            f'.react-datepicker__month-select option[value="{month}"]'
-        ).click()
+        browser.element(f'.react-datepicker__month-select option[value="{month}"]').click()
         browser.element(".react-datepicker__year-select").click()
-        browser.element(
-            f'.react-datepicker__year-select option[value="{year}"]'
-        ).click()
+        browser.element(f'.react-datepicker__year-select option[value="{year}"]').click()
         browser.element(
             f'[aria-label="Choose {date_obj.strftime("%A")}, {date_obj.strftime("%B")} {day}th, {year}"]'
         ).click()
@@ -118,9 +135,7 @@ class RegistrationPage:
     @allure.step("Upload picture: {file_name}")
     def upload_picture(self, file_name):
         file_path = Path(__file__).parent.parent / "resources" / file_name
-        browser.element("#uploadPicture").send_keys(
-            str(file_path.resolve())
-        )
+        browser.element("#uploadPicture").send_keys(str(file_path.resolve()))
         return self
 
     @allure.step("Fill address")
@@ -130,43 +145,33 @@ class RegistrationPage:
 
     @allure.step("Select state and city (default)")
     def select_state_and_city(self):
-        browser.driver.execute_script(
-            "arguments[0].scrollIntoView(true);",
-            browser.element("#state").locate(),
-        )
-        browser.element("#state").click()
-        browser.element("#react-select-3-input").type("NCR").press_enter()
-        browser.element("#city").should(be.visible).click()
-        browser.element("#react-select-4-input").type("Delhi").press_enter()
+        self._select_from_react_dropdown("#react-select-3-input", "NCR")
+        self._select_from_react_dropdown("#react-select-4-input", "Delhi")
         return self
 
     @allure.step("Select state: {state} and city: {city}")
     def select_state_and_city_dynamic(self, state, city):
-        browser.driver.execute_script(
-            "arguments[0].scrollIntoView(true);",
-            browser.element("#state").locate(),
-        )
-        browser.element("#state").should(be.visible).click()
-        browser.element("#react-select-3-input").should(be.existing).type(state).press_enter()
-        browser.element("#city").should(be.visible).click()
-        browser.element("#react-select-4-input").should(be.existing).type(city).press_enter()
+        self._select_from_react_dropdown("#react-select-3-input", state)
+        self._select_from_react_dropdown("#react-select-4-input", city)
         return self
 
     @allure.step("Submit registration form")
     def submit(self):
-        browser.element("#submit").should(be.visible).should(be.enabled).click()
+        submit_button = browser.element("#submit")
+        self._scroll_to(submit_button, 250)
+
+        browser.driver.execute_script("""
+            arguments[0].click();
+        """, submit_button.locate())
+
         return self
 
     @allure.step("Verify registration result (manual data)")
     def should_have_registered(self, expected_values):
-        browser.element(".modal-header").should(
-            have.text("Thanks for submitting the form")
-        )
-        browser.all(".table-hover tbody tr td")[1::2].should(
-            have.exact_texts(*expected_values)
-        )
+        browser.element(".modal-header").should(have.text("Thanks for submitting the form"))
+        browser.all(".table-hover tbody tr td")[1::2].should(have.exact_texts(*expected_values))
 
-    @allure.step("Verify registration result for user: {user.email}")
+    @allure.step("Verify registration result for user")
     def should_have_registered_user(self, user: User):
         expected_texts = [
             f"{user.first_name} {user.last_name}",
@@ -183,6 +188,7 @@ class RegistrationPage:
         browser.all(".table-hover tbody tr td")[1::2].should(
             have.exact_texts(*expected_texts)
         )
+        return self
 
     @allure.step("Register user via User model")
     def register(self, user: User):
