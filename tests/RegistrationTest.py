@@ -9,7 +9,7 @@ from utils.users import student
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.title("Successful registration with manual data")
 @allure.description("User fills registration form with hardcoded data")
-def test_form():
+def test_register_user():
     registration_page = RegistrationPage()
 
     registration_page.open()
@@ -48,7 +48,7 @@ def test_form():
 @allure.severity(allure.severity_level.CRITICAL)
 @allure.title("Successful registration with generated user")
 @allure.description("User registers using User dataclass and Faker data")
-def test_register_user():
+def test_register():
     reg_page = RegistrationPage()
     reg_page.open().register(student)
     reg_page.should_have_registered_user(student)
