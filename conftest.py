@@ -24,8 +24,8 @@ def setup_browser(request):
     browser_name = request.config.getoption("--browser")
     browser_version = request.config.getoption("--browser_version")
     headless = request.config.getoption("--headless") == "True"
-    width = int(request.config.getoption("--width"))
-    height = int(request.config.getoption("--height"))
+    width = request.config.getoption("--width")
+    height = request.config.getoption("--height")
     base_url = request.config.getoption("--base_url")
     selenoid_url = request.config.getoption("--selenoid_url")
 
