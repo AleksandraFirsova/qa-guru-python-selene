@@ -10,7 +10,7 @@ load_dotenv()
 
 
 def pytest_addoption(parser):
-    parser.addoption("--browser", default=os.getenv("BROWSER"), help="Browser to use")
+    parser.addoption("--browser", default=os.getenv("BROWSER", "chrome"), help="Browser to use")
     parser.addoption("--browser_version", default=os.getenv("BROWSER_VERSION", "127.0"), help="Browser version")
     parser.addoption("--headless", default=os.getenv("HEADLESS", "False"), help="Headless mode True/False")
     parser.addoption("--width", default=os.getenv("SCREEN_WIDTH", "1440"), help="Window width")
