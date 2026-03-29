@@ -22,6 +22,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture(autouse=True)
 def setup_browser(request):
+    print("SELENOID_URL =", os.getenv("SELENOID_URL"))
     browser_name = request.config.getoption("--browser")
     browser_version = request.config.getoption("--browser_version")
     headless = request.config.getoption("--headless") == "True"
