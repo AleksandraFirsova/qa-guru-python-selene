@@ -6,7 +6,7 @@ from selene import browser
 from utils import attach
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv("/home/jenkins/workspace/qa-guru-python-selenoid/.env")
 
 
 def pytest_addoption(parser):
