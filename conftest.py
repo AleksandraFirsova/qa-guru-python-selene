@@ -44,7 +44,7 @@ def setup_browser(request):
         options.add_argument("--headless=new")
 
     driver = webdriver.Remote(
-        command_executor=f"https://{user}:{password}@{selenoid_url}",  # оставляем /wd/hub
+        command_executor=f"https://{user}:{password}@{selenoid_url}",
         options=options
     )
 
