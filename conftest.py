@@ -12,7 +12,7 @@ load_dotenv()
 def pytest_addoption(parser):
     parser.addoption("--environment", default="prod", help="Test environment")
     parser.addoption("--browser", default=os.getenv("BROWSER"), help="Browser to use")
-    parser.addoption("--browser_version", default="127.00", help="Browser version")
+    parser.addoption("--browser_version", default="127.0", help="Browser version")
     parser.addoption("--headless", default=os.getenv("HEADLESS", "False"), help="Headless mode True/False")
     parser.addoption("--width", default=os.getenv("SCREEN_WIDTH", 1440), help="Window width")
     parser.addoption("--height", default=os.getenv("SCREEN_HEIGHT", 900), help="Window height")
@@ -22,7 +22,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture(autouse=True)
 def setup_browser(request):
-    print("SELENOID_URL =", os.getenv("SELENOID_URL"))
+    browser_version = request.config.getoption("--browser_version")
     browser_name = request.config.getoption("--browser")
     browser_version = request.config.getoption("--browser_version")
     headless = request.config.getoption("--headless") == "True"
@@ -41,10 +41,11 @@ def setup_browser(request):
         "enableVNC": True,
         "enableVideo": True
     })
+    print(options.to_capabilities()),
     options.add_argument(f"--window-size={width},{height}")
 
     driver = webdriver.Remote(
-        command_executor=f"https://{user}:{password}@{selenoid_url}",
+        command_executor=f"https://{user}:{password}@{selenoid_url}",  # оставляем /wd/hub
         options=options
     )
 
